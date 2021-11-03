@@ -32,23 +32,36 @@ resource "azurerm_network_interface" "example" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.example.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.example.id
+
+    
+  }
+}
+
+resource "azurerm_public_ip" "example" {
+  name                = "EskimooPublicIp1"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  allocation_method   = "Dynamic"
+
+  tags = {
+    environment = "Production"
   }
 }
 
 resource "azurerm_linux_virtual_machine" "example" {
-  name                = "example-machine"
+  name                = "EskimooTest"
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
   size                = "Standard_F2"
+  disable_password_authentication = false
   admin_username      = "adminuser"
+  admin_password = "Password123!"
   network_interface_ids = [
     azurerm_network_interface.example.id,
   ]
 
-#   admin_ssh_key {
-#     username   = "adminuser"
-#     public_key = "VMEskimooTestVM_key"
-#   }
+
 
   os_disk {
     caching              = "ReadWrite"
